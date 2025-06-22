@@ -14,9 +14,9 @@ const Login = () => {
   if (user) return <Navigate to={from} replace={true} />;
   if (loading) return <LoadingSpinner />;
   // form submit handler
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.target;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
 
