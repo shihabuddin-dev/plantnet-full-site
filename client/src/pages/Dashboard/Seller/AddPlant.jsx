@@ -1,5 +1,6 @@
-import axios from "axios";
 import AddPlantForm from "../../../components/Form/AddPlantForm";
+import { imageUpload } from "../../../api/utils";
+import axios from "axios";
 
 const AddPlant = () => {
   const handleFormSubmit = async (e) => {
@@ -10,20 +11,21 @@ const AddPlant = () => {
     const price = form.price.value;
     const quantity = form.quantity.value;
 
-    const image = form.image.files[0];
-    const imageFormData = new FormData();
-    imageFormData.append("image", image);
+    // image post in img bb website
+    const image = form?.image?.files[0];
+    const imageUrl =await imageUpload(image);
 
-    const plantData = { name, category, price, quantity, image };
-    console.log(plantData);
+    const plantData = { name, category, price, quantity, image: imageUrl };
+    console.table(plantData)
+
+    //  sent to db
     const { data } = await axios.post(
-      `https://api.imgbb.com/1/upload?key=${
-        import.meta.env.VITE_IMGBB_API_KEY
-      }`,
-      imageFormData
+      `${import.meta.env.VITE_API_URL}/add-plant`,
+      plantData
     );
     console.log(data);
   };
+
   return (
     <div>
       {/* Form */}

@@ -4,28 +4,30 @@ import useAuth from "../../hooks/useAuth";
 import { toast } from "react-hot-toast";
 import { TbFidgetSpinner } from "react-icons/tb";
 import Container from "../../components/Shared/Container";
+import { imageUpload } from "../../api/utils";
 
 const SignUp = () => {
   const { createUser, updateUserProfile, signInWithGoogle, loading } =
     useAuth();
   const navigate = useNavigate();
   // form submit handler
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.target;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
     const name = form.name.value;
     const email = form.email.value;
     const password = form.password.value;
+
+    // image post in img bb website
+    const image = form.image.files[0];
+    const imageUrl = imageUpload(image);
 
     try {
       //2. User Registration
       const result = await createUser(email, password);
 
       //3. Save username & profile photo
-      await updateUserProfile(
-        name,
-        "https://lh3.googleusercontent.com/a/ACg8ocKUMU3XIX-JSUB80Gj_bYIWfYudpibgdwZE1xqmAGxHASgdvCZZ=s96-c"
-      );
+      await updateUserProfile(name, imageUrl);
       console.log(result);
 
       navigate("/");
