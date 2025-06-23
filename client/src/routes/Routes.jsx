@@ -26,10 +26,14 @@ export const router = createBrowserRouter([
         path: "/",
         hydrateFallbackElement: <LoadingSpinner />,
         loader: () => fetch(`${import.meta.env.VITE_API_URL}/plants`),
-        element: <Home />
+        element: <Home />,
       },
       {
         path: "/plant/:id",
+
+        hydrateFallbackElement: <LoadingSpinner />,
+        loader: ({ params }) =>
+          fetch(`${import.meta.env.VITE_API_URL}/plant/${params.id}`),
         element: <PlantDetails />,
       },
     ],

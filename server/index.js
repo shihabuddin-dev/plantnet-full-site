@@ -81,6 +81,13 @@ async function run() {
       const result = await plantsCollection.find().toArray()
       res.send(result)
     })
+    // get single plant data
+    app.get('/plant/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = new ObjectId(id)
+      const result = await plantsCollection.findOne(filter)
+      res.send(result)
+    })
 
     // add a plant in db
     app.post('/add-plant', async (req, res) => {
