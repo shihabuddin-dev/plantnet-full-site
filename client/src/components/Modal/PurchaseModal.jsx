@@ -1,24 +1,30 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
-import useAuth from '../../hooks/useAuth';
-import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
-
+import useAuth from '../../hooks/useAuth'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import CheckoutForm from '../Form/CheckoutForm'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements } from '@stripe/react-stripe-js'
+// Make sure to call `loadStripe` outside of a component’s render to avoid
+// recreating the `Stripe` object on every render.
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PK_KEY)
 const PurchaseModal = ({ closeModal, isOpen, plant }) => {
-  const {user}=useAuth()
-    const { name, category, quantity, price, _id, seller, image } = plant || {}
-    
+  const { user } = useAuth()
+  console.log(user)
+  const { name, category, quantity, price, _id, seller, image } = plant || {}
   const [selectedQuantity, setSelectedQuantity] = useState(1)
   const [totalPrice, setTotalPrice] = useState(price)
   const [orderData, setOrderData] = useState({
     seller,
     plantId: _id,
-    quantity: parseInt(1),
-    price: parseFloat(price),
+    quantity: 1,
+    price: price,
     plantName: name,
     plantCategory: category,
     plantImage: image,
   })
-   useEffect(() => {
+
+  useEffect(() => {
     if (user)
       setOrderData(prev => {
         return {
@@ -31,8 +37,8 @@ const PurchaseModal = ({ closeModal, isOpen, plant }) => {
         }
       })
   }, [user])
-  // Total Price Calculation
-   const handleQuantity = value => {
+
+  const handleQuantity = value => {
     const totalQuantity = parseInt(value)
     if (totalQuantity > quantity)
       return toast.error('You cannot purchase more.')
@@ -47,10 +53,6 @@ const PurchaseModal = ({ closeModal, isOpen, plant }) => {
         quantity: totalQuantity,
       }
     })
-
-  }
-  const handleOrder=()=>{
-    console.log(orderData)
   }
 
   return (
@@ -72,9 +74,7 @@ const PurchaseModal = ({ closeModal, isOpen, plant }) => {
             >
               Review Info Before Purchase
             </DialogTitle>
-           
-
- <div className='mt-2'>
+            <div className='mt-2'>
               <p className='text-sm text-gray-500'>Plant: {name}</p>
             </div>
             <div className='mt-2'>
@@ -114,8 +114,14 @@ const PurchaseModal = ({ closeModal, isOpen, plant }) => {
             <div className='mt-2'>
               <p className='text-sm text-gray-500'>Total Price: {totalPrice}</p>
             </div>
-            <button onClick={handleOrder} className='btn btn-sm bg-lime-500 text-white'>Order Now</button>
-
+            {/* Stripe Checkout form */}
+            <Elements stripe={stripePromise}>
+              <CheckoutForm
+                totalPrice={totalPrice}
+                closeModal={closeModal}
+                orderData={orderData}
+              />
+            </Elements>
           </DialogPanel>
         </div>
       </div>
