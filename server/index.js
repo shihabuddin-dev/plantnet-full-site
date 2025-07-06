@@ -97,6 +97,12 @@ async function run() {
       res.send(result)
     })
 
+    // create payment intent 
+    app.post('/create-payment-intent', async (req, res)=>{
+      const {plantId, quantity}=req.body
+     console.log({ plantId, quantity})
+     res.send({plantId, quantity})
+    })
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 })
     console.log(
